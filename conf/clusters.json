@@ -1,0 +1,16 @@
+[
+  {
+    "apis": {
+      "deployments": "apis/extensions/v1beta1",
+      "replicasets": "apis/extensions/v1beta1"
+    },
+    "name": "dev",
+    "server": "https://cluster.dev",
+    "ca": "base64 encoded",
+    "token": "base64 encoded",
+    "environment": [
+      "dev",
+      "development"
+    ]
+  }
+]

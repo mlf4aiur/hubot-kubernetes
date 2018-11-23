@@ -1,8 +1,10 @@
-# Kubernetes for Hubot
+Kubernetes for Hubot
+====================
 
 Query your Kubernetes resources using Hubot.
 
-## Installation
+Installation
+------------
 
 Add `hubot-kubernetes` to your `package.json` file:
 
@@ -20,53 +22,54 @@ Then add "hubot-kubernetes" to your `external-scripts.json` file:
 
 Finally, run `npm install hubot-kubernetes` and you're done!
 
-### Configuration
+Configuration
+-------------
 
-- KUBE_HOST - (REQUIRED) Your Kubernetes apiserver url. (By default: https://localhost)
-- KUBE_CONTEXT - (OPTIONAL) Default namespace for the queries. (By default: default)
-- KUBE_VERSION - (OPTIONAL) Your Kubernetes api version. (By default: v1)
-- KUBE_TOKENS - (See Supporting different k8s users section)
+- apis.json - Default api prefix
+- clusters.json - Settings for cluster connectin, host, ca, token, etc
 
-#### Self Signed Certificates
-For https connections, you need to set one of the following environment variables:
-- KUBE_CA - Path of the CA certificate file
-- NODE_TLS_REJECT_UNAUTHORIZED - If you don't have a CA certificate file, set this as false for granting access to unauthorized server.
+Usage
+-----
 
-#### Supporting different k8s users
-With the assistance of hubot-auth, it is possible to use different basic authentication tokens for each given user role. These are the supported options:
-* specify basic auth credentials using KUBE_HOST itself:
-  - https://user:password@kubernetes.cluster
-* specify a single token using KUBE_TOKENS:
-  - export KUBE_TOKENS=user:password
+ > `hubot k8s describe [deploy|po|rs|svc] <resource name> namespace=<namespace name> cluster=<cluster name>`
 
-  When you define only a single token in KUBE_TOKENS environment variable, regardless of the user's role, it will always use this token for all the requests.
-* specify multiple tokens using KUBE_TOKENS:
-  - export KUBE_TOKENS=user1:password1,user2:password2
+Show details of a specific resource or group of resources under given cluster.
 
-  When you define multiple tokens in KUBE_TOKENS environment variable, it will choose a specific token depending on user's role. If a corresponding token is not defined for the given user role, then it will try to connect to KUBE_HOST url as is. Therefore, if you set basic auth credentials using KUBE_HOST variable, this will be the default access method, for all the undefined user roles.
+ > `hubot k8s get [deploy|po|rs|svc] namespace=<namespace name> cluster=<cluster name> [labels]`
 
-Caveat:
+Display one or many resources under given cluster.
 
-  If user has multiple roles with corresponding tokens, then first encountered token in the token pool will be used.
+ > `hubot k8s [delete|restart] [po|pod|pods] namespace=<namespace name> cluster=<cluster name> [pod name|labels]`
 
+Delete pod by name, or by label selector under given cluster. Note that this also
+"restarts" a service.
 
-### Usage
+ > `hubot k8s [log|logs] [previous] <pod name> namespace=<namespace name> cluster=<cluster name> [container=<container name>] [lines]`
 
-This extension is used for querying replication controllers, services and pods for the given api server.
+Print the logs for a container in a pod under given cluster, default display only the most recent 10 lines of output.
 
- > k8s context
+Example
+-------
 
- Returns the current context
+> `hubot k8s describe deploy hello-world namespace=default cluster=dev`
 
- > k8s context test
+> `hubot k8s get po namespace=default cluster=dev app=hello-world`
 
- Changes the context to test for the user
+> `hubot k8s delete po namespace=default cluster=dev hello-world-1234567890-xxxxx`
 
- > k8s po
+> `hubot k8s delete po namespace=default cluster=dev app=hello-world`
 
- Returns a list of pods for the given context.
+> `hubot k8s restart po namespace=default cluster=dev hello-world-1234567890-xxxxx`
 
- > k8s rc type=front-end
+> `hubot k8s restart po namespace=default cluster=dev app=hello-world`
 
- Returns a list of controllers with label type=front-end for the given context.
+> `hubot k8s logs hello-world-3876734081-7b882 namespace=default cluster=dev 10`
 
+> `hubot k8s logs previous hello-world-1234567890-xxxxx namespace=default cluster=dev 10`
+
+> `hubot k8s logs hello-world-1234567890-xxxxx namespace=default cluster=dev container=hello-world 10`
+
+License
+-------
+
+See the [LICENSE](LICENSE) file for license rights and limitations (MIT).

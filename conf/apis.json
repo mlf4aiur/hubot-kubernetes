@@ -1,0 +1,6 @@
+{
+  "deployments": "apis/apps/v1beta1",
+  "pods": "api/v1",
+  "replicasets": "apis/extensions/v1beta1",
+  "services": "api/v1"
+}
